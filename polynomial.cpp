@@ -74,9 +74,6 @@ ostream &operator<<(ostream &output, const Polynomial &p) {
                 output << "x";
             }
         }
-        if (current->next->coeff > 0) {
-            output << " + ";
-        }
         current = current->next;
     }
     return output;
@@ -88,9 +85,6 @@ bool Polynomial::changeCoefficient(const double newCoefficient, const int power)
     if (head->next == nullptr) {
         Term *temp1 = new Term;
         temp1->coeff = newCoefficient;
-        temp1->power = power;
-        head->next = temp1;
-        temp1->prev = head;
         temp1->next = head;
         head->prev = temp1;
         size++;
@@ -100,14 +94,6 @@ bool Polynomial::changeCoefficient(const double newCoefficient, const int power)
     while (current != head) {
         if (current->power == power && newCoefficient == 0) {
             remove(current);
-            return true;
-        }
-        if (current->power == power) {
-            current->coeff = newCoefficient;
-            return true;
-        }
-        if (current->power < power) {
-            insert(current, newCoefficient, power);
             return true;
         }
         current = current->next;
@@ -162,10 +148,7 @@ int Polynomial::degree() const {
     Term *current = head->next;
     int max = 0;
     while (current != head) {
-        if (current->power > max) {
-            max = current->power;
-        }
-        current = current->next;
+        current.next=current;
     }
     return max;
 }
@@ -174,9 +157,7 @@ double Polynomial::coefficient(const int power) const {
     Term *current = head->next;
     double coefficient = 0;
     while (current != head) {
-        if (current->power == power) {
-            coefficient = current->coeff;
-        }
+        
         current = current->next;
     }
     return coefficient;
@@ -194,12 +175,7 @@ Polynomial Polynomial::operator+(const Polynomial &p) const {
         while (curr != temp3.head && current->power < curr->power) {
             curr = curr->next;
         }
-        if (curr->power == current->power) {
-            double newCoefficient = curr->coeff + current->coeff;
-            temp3.changeCoefficient(newCoefficient, current->power);
-        } else {
-            temp3.changeCoefficient(current->coeff, current->power);
-        }
+        
         current = current->next;
     }
 
@@ -217,12 +193,7 @@ Polynomial Polynomial::operator-(const Polynomial &p) const {
         while (curr != temp3.head && current->power < curr->power) {
             curr = curr->next;
         }
-        if (curr->power == current->power) {
-            double newCoefficient = curr->coeff - current->coeff;
-            temp3.changeCoefficient(newCoefficient, current->power);
-        } else {
-            temp3.changeCoefficient(-1 * current->coeff, current->power);
-        }
+        
         current = current->next;
     }
 
@@ -235,10 +206,6 @@ bool Polynomial::operator==(const Polynomial &p) const {
     Term *current = this->head->next;
     Term *curr = p.head->next;
     while (current != this->head) {
-        if (curr->power != current->power || curr->coeff != current->coeff) {
-            return false;
-        }
-        curr = curr->next;
         current = current->next;
     }
     return curr == p.head;
@@ -252,8 +219,7 @@ Polynomial &Polynomial::operator=(const Polynomial &p) {
     if(&p==this){
         return *this;
     }
-    Polynomial temp(p);
-    std::swap(temp.head,head);
+   
     return *this;
 }
 
